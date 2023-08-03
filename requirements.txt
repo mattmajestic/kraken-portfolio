@@ -1,0 +1,16 @@
+certifi
+charset-normalizer
+cycler
+idna
+kiwisolver
+matplotlib
+numpy
+pandas
+Pillow
+pyparsing
+python-dateutil
+pytz
+requests
+six
+streamlit
+urllib3
