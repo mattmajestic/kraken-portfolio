@@ -6,7 +6,6 @@ import hashlib
 import hmac
 import base64
 import time
-import plotly.graph_objects as go
 import pandas as pd
 
 # Read Kraken API key and secret stored in environment variables
@@ -31,52 +30,7 @@ def kraken_request(uri_path, data, api_key, api_sec):
     req = requests.post((api_url + uri_path), headers=headers, data=data)
     return req
 
-def get_crypto_prices():
-    # Fetch cryptocurrency prices from CoinGecko API
-    url = 'https://api.coingecko.com/api/v3/simple/price'
-    kraken_to_coingecko_mapping = {
-        'XXBT': 'bitcoin',
-        'XETH': 'ethereum',
-        'XXRP': 'ripple',
-        # Add more mappings as needed for your specific coins
-    }
-    params = {
-        'ids': ','.join(kraken_to_coingecko_mapping.values()),
-        'vs_currencies': 'usd'
-    }
-    response = requests.get(url, params=params)
-    crypto_prices = response.json()
-    return crypto_prices
-
-
-def plot_crypto_balances_with_prices(balances, prices):
-    sorted_balances = {k: v for k, v in sorted(balances.items(), key=lambda item: float(item[1]), reverse=True)}
-    crypto_names = list(sorted_balances.keys())
-    crypto_amounts = list(sorted_balances.values())
-
-    # Fetch cryptocurrency prices from CoinGecko
-    crypto_prices = []
-    for name in crypto_names:
-        # Convert the currency name to lowercase
-        name_lower = name.lower()
-        # Check if the currency name exists in the prices dictionary
-        if name_lower in prices:
-            # Fetch the price in USD and append it to the list
-            crypto_prices.append(prices[name_lower]['usd'])
-        else:
-            # If the currency name is not found, set the price to 0
-            crypto_prices.append(0)
-
-    # Create an interactive scatter plot using Plotly
-    fig = go.Figure(data=go.Scatter(x=crypto_names, y=crypto_amounts, mode='markers', marker=dict(size=10, color=crypto_prices, colorscale='Viridis')))
-    fig.update_layout(title='Crypto Account Balances', xaxis_title='Cryptocurrency', yaxis_title='Balance', showlegend=False)
-    st.plotly_chart(fig)
-
-    # Create a DataFrame to display the cryptocurrency balances and prices
-    df = pd.DataFrame({'Cryptocurrency': crypto_names, 'Balance': crypto_amounts, 'Price (USD)': crypto_prices})
-    st.dataframe(df)
-
-if __name__ == "__main__":
+def get_crypto_balances():
     # Construct the request and print the result
     resp = kraken_request('/0/private/Balance', {
         "nonce": str(int(1000*time.time()))
@@ -87,9 +41,12 @@ if __name__ == "__main__":
 
     # Get the balances from the 'result' field in the response
     balances = data['result']
+    return balances
 
-    # Get cryptocurrency prices
-    crypto_prices = get_crypto_prices()
+if __name__ == "__main__":
+    # Fetch cryptocurrency balances from Kraken
+    balances = get_crypto_balances()
 
-    # Convert balances to USD and plot the crypto balances
-    plot_crypto_balances_with_prices(balances, crypto_prices)
+    # Create a DataFrame to display the cryptocurrency balances
+    df = pd.DataFrame({'Cryptocurrency': list(balances.keys()), 'Balance': list(balances.values())})
+    st.dataframe(df)
