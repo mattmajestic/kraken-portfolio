@@ -51,7 +51,19 @@ def plot_crypto_balances_with_prices(balances, prices):
     sorted_balances = {k: v for k, v in sorted(balances.items(), key=lambda item: float(item[1]), reverse=True)}
     crypto_names = list(sorted_balances.keys())
     crypto_amounts = list(sorted_balances.values())
-    crypto_prices = [prices[kraken_to_coingecko_mapping[name]]['usd'] for name in crypto_names]
+
+    # Fetch cryptocurrency prices from CoinGecko
+    crypto_prices = []
+    for name in crypto_names:
+        # Convert the currency name to lowercase
+        name_lower = name.lower()
+        # Check if the currency name exists in the prices dictionary
+        if name_lower in prices:
+            # Fetch the price in USD and append it to the list
+            crypto_prices.append(prices[name_lower]['usd'])
+        else:
+            # If the currency name is not found, set the price to 0
+            crypto_prices.append(0)
 
     # Plot the crypto balances with their prices in USD
     plt.figure(figsize=(12, 6))
