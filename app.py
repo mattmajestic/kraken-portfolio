@@ -7,7 +7,8 @@ import hmac
 import base64
 import time
 import matplotlib.pyplot as plt
-from pycoingecko import CoinGeckoAPI
+
+load_dotenv()
 
 # Read Kraken API key and secret stored in environment variables
 api_url = "https://api.kraken.com"
@@ -33,8 +34,13 @@ def kraken_request(uri_path, data, api_key, api_sec):
 
 def get_crypto_prices():
     # Fetch cryptocurrency prices from CoinGecko API
-    cg = CoinGeckoAPI()
-    crypto_prices = cg.get_price(ids='bitcoin,ethereum,ripple', vs_currencies='usd')
+    url = 'https://api.coingecko.com/api/v3/simple/price'
+    params = {
+        'ids': 'bitcoin,ethereum,ripple',
+        'vs_currencies': 'usd'
+    }
+    response = requests.get(url, params=params)
+    crypto_prices = response.json()
     return crypto_prices
 
 def plot_crypto_balances_with_prices(balances, prices):
