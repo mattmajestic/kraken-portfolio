@@ -33,8 +33,14 @@ def kraken_request(uri_path, data, api_key, api_sec):
 def get_crypto_prices():
     # Fetch cryptocurrency prices from CoinGecko API
     url = 'https://api.coingecko.com/api/v3/simple/price'
+    kraken_to_coingecko_mapping = {
+        'XXBT': 'bitcoin',
+        'XETH': 'ethereum',
+        'XXRP': 'ripple',
+        # Add more mappings as needed for your specific coins
+    }
     params = {
-        'ids': 'bitcoin,ethereum,ripple',
+        'ids': ','.join(kraken_to_coingecko_mapping.values()),
         'vs_currencies': 'usd'
     }
     response = requests.get(url, params=params)
@@ -45,7 +51,7 @@ def plot_crypto_balances_with_prices(balances, prices):
     sorted_balances = {k: v for k, v in sorted(balances.items(), key=lambda item: float(item[1]), reverse=True)}
     crypto_names = list(sorted_balances.keys())
     crypto_amounts = list(sorted_balances.values())
-    crypto_prices = [prices[name.lower()]['usd'] for name in crypto_names]
+    crypto_prices = [prices[kraken_to_coingecko_mapping[name]]['usd'] for name in crypto_names]
 
     # Plot the crypto balances with their prices in USD
     plt.figure(figsize=(12, 6))
