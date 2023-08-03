@@ -59,18 +59,14 @@ if __name__ == "__main__":
 
     # Create a summary above the chart and datatable
     total_balance = sum(float(balance) for balance in balances.values())
-    st.write(f"Total Balance: ${total_balance:.2f}")
 
     # Create a DataFrame to display the cryptocurrency balances
     df = pd.DataFrame({'Cryptocurrency': list(balances.keys()), 'Balance': list(balances.values())})
 
-    # Create two columns for chart and datatable side by side
-    col1, col2 = st.columns(2)
-
     # Plot the pie chart in the first column
     fig = go.Figure(data=go.Pie(labels=df['Cryptocurrency'], values=df['Balance']))
     fig.update_layout(title='Crypto Account Balances', showlegend=False)
-    col1.plotly_chart(fig)
+    plotly_chart(fig)
 
     # Display the data table in the second column
-    col2.dataframe(df)
+    dataframe(df)
