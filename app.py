@@ -8,8 +8,6 @@ import base64
 import time
 import matplotlib.pyplot as plt
 
-load_dotenv()
-
 # Read Kraken API key and secret stored in environment variables
 api_url = "https://api.kraken.com"
 api_key = os.environ['API_KEY_KRAKEN']
