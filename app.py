@@ -7,6 +7,7 @@ import hmac
 import base64
 import time
 import plotly.graph_objects as go
+import pandas as pd
 
 # Read Kraken API key and secret stored in environment variables
 api_url = "https://api.kraken.com"
