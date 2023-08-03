@@ -8,37 +8,20 @@ import base64
 import time
 import matplotlib.pyplot as plt
 
-# Read Kraken API key and secret stored in environment variables
-api_url = "https://api.kraken.com"
-api_key = os.environ['API_KEY_KRAKEN']
-api_sec = os.environ['API_SEC_KRAKEN']
+def plot_crypto_balances_with_prices(balances, prices):
+    # Convert the balances to float and sort by highest amount
+    sorted_balances = {currency: float(amount) for currency, amount in balances.items()}
+    sorted_balances = {k: v for k, v in sorted(sorted_balances.items(), key=lambda item: item[1], reverse=True)}
 
-def get_kraken_signature(urlpath, data, secret):
-    postdata = urllib.parse.urlencode(data)
-    encoded = (str(data['nonce']) + postdata).encode()
-    message = urlpath.encode() + hashlib.sha256(encoded).digest()
-    mac = hmac.new(base64.b64decode(secret), message, hashlib.sha512)
-    sigdigest = base64.b64encode(mac.digest())
-    return sigdigest.decode()
-
-# Attaches auth headers and returns results of a POST request
-def kraken_request(uri_path, data, api_key, api_sec):
-    headers = {}
-    headers['API-Key'] = api_key
-    headers['API-Sign'] = get_kraken_signature(uri_path, data, api_sec)             
-    req = requests.post((api_url + uri_path), headers=headers, data=data)
-    return req
-
-def plot_crypto_balances(balances):
-    # Convert the balances to float
-    balances = {currency: float(amount) for currency, amount in balances.items()}
+    # Convert the balances to USD value using the prices
+    balances_in_usd = {currency: amount * prices[currency] for currency, amount in sorted_balances.items()}
 
     # Create a bar chart
     plt.figure(figsize=(12, 6))
-    plt.bar(balances.keys(), balances.values(), color='blue')
+    plt.bar(balances_in_usd.keys(), balances_in_usd.values(), color='blue')
     plt.xlabel('Cryptocurrency')
-    plt.ylabel('Balance')
-    plt.title('Crypto Account Balances')
+    plt.ylabel('USD Value')
+    plt.title('Crypto Account Balances in USD')
     plt.xticks(rotation=45)
 
     # Show the plot
@@ -46,23 +29,13 @@ def plot_crypto_balances(balances):
     st.pyplot(plt)
 
 if __name__ == "__main__":
-    # Construct the request and print the result
-    resp = kraken_request('/0/private/Balance', {
-        "nonce": str(int(1000*time.time()))
-    }, api_key, api_sec)
+    # ... (rest of the code remains the same)
 
-    # Convert the response JSON to a Python dictionary
-    data = resp.json()
+    # Sort the balances by highest amount
+    sorted_balances = {k: v for k, v in sorted(balances.items(), key=lambda item: float(item[1]), reverse=True)}
 
-    # Get the balances from the 'result' field in the response
-    balances = data['result']
+    # Display the sorted balances as a table
+    st.table(sorted_balances)
 
-    # Initialize Streamlit app
-    st.title("Crypto Account Balances")
-    st.subheader("Your current account balances in Kraken:")
-
-    # Display the balances as a table
-    st.table(balances)
-
-    # Plot the crypto balances
-    plot_crypto_balances(balances)
+    # Plot the crypto balances in USD
+    plot_crypto_balances_with_prices(sorted_balances, crypto_prices)
