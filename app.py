@@ -6,17 +6,17 @@ import hashlib
 import hmac
 import base64
 import time
-import pandas as pd
 import plotly.graph_objects as go
+import pandas as pd
+
+# Read the README file
+with open('README.md', 'r') as file:
+    readme_text = file.read()
 
 # Read Kraken API key and secret stored in environment variables
 api_url = "https://api.kraken.com"
 api_key = os.environ['API_KEY_KRAKEN']
 api_sec = os.environ['API_SEC_KRAKEN']
-
-# Read the contents of the README.md file
-with open('README.md', 'r') as file:
-    readme_text = file.read()
 
 def get_kraken_signature(urlpath, data, secret):
     postdata = urllib.parse.urlencode(data)
@@ -27,7 +27,6 @@ def get_kraken_signature(urlpath, data, secret):
     sigdigest = base64.b64encode(mac.digest())
     return sigdigest.decode()
 
-# Attaches auth headers and returns results of a POST request
 def kraken_request(uri_path, data, api_key, api_sec):
     headers = {}
     headers['API-Key'] = api_key
@@ -35,7 +34,21 @@ def kraken_request(uri_path, data, api_key, api_sec):
     req = requests.post((api_url + uri_path), headers=headers, data=data)
     return req
 
-def get_crypto_balances():
+def plot_crypto_balances(balances):
+    sorted_balances = {k: v for k, v in sorted(balances.items(), key=lambda item: float(item[1]), reverse=True)}
+    crypto_names = list(sorted_balances.keys())
+    crypto_amounts = list(sorted_balances.values())
+
+    # Create an interactive pie chart using Plotly
+    fig = go.Figure(data=go.Pie(labels=crypto_names, values=crypto_amounts))
+    fig.update_layout(title='Crypto Account Balances')
+    st.plotly_chart(fig)
+
+    # Create a DataFrame to display the cryptocurrency balances
+    df = pd.DataFrame({'Cryptocurrency': crypto_names, 'Balance': crypto_amounts})
+    st.dataframe(df)
+
+if __name__ == "__main__":
     # Construct the request and print the result
     resp = kraken_request('/0/private/Balance', {
         "nonce": str(int(1000*time.time()))
@@ -46,27 +59,9 @@ def get_crypto_balances():
 
     # Get the balances from the 'result' field in the response
     balances = data['result']
-    return balances
 
-if __name__ == "__main__":
-    # Set page title and favicon
-    st.set_page_config(page_title="Kraken Crypto Balances", page_icon=":moneybag:")
+    # Show the README content
+    st.markdown(readme_text)
 
-    st.markdown(readme_text, unsafe_allow_html=True)
-
-    # Fetch cryptocurrency balances from Kraken
-    balances = get_crypto_balances()
-
-    # Create a summary above the chart and datatable
-    total_balance = sum(float(balance) for balance in balances.values())
-
-    # Create a DataFrame to display the cryptocurrency balances
-    df = pd.DataFrame({'Cryptocurrency': list(balances.keys()), 'Balance': list(balances.values())})
-
-    # Plot the pie chart in the first column
-    fig = go.Figure(data=go.Pie(labels=df['Cryptocurrency'], values=df['Balance']))
-    fig.update_layout(title='Crypto Account Balances', showlegend=False)
-    plotly_chart(fig)
-
-    # Display the data table in the second column
-    dataframe(df)
+    # Plot the crypto balances
+    plot_crypto_balances(balances)
