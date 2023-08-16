@@ -63,5 +63,8 @@ if __name__ == "__main__":
     # Show the README content
     st.markdown(readme_text)
 
+    st.write("")
+    st.write("")
+
     # Plot the crypto balances
     plot_crypto_balances(balances)
