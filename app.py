@@ -76,7 +76,7 @@ if __name__ == "__main__":
     for _, row in merged_data.iterrows():
         if row['type'] not in type_balances:
             type_balances[row['type']] = 0
-        type_balances[row['type']] += row['Balance']
+        type_balances[row['type']] += float(row['Balance'])  # Convert to float
 
     # Create labels and values for the pie chart
     labels = list(type_balances.keys())
