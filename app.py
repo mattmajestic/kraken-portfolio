@@ -12,7 +12,7 @@ import pandas as pd
 # Set page configuration
 st.set_page_config(
     page_title="Kraken Portfolio",
-    page_icon="💰", 
+    page_icon="💰",
 )
 
 # Read the README file
@@ -25,14 +25,29 @@ api_key = os.environ['API_KEY_KRAKEN']
 api_sec = os.environ['API_SEC_KRAKEN']
 
 # Function to get Kraken signature
-# ... (rest of the functions remain the same)
+def get_kraken_signature(urlpath, data, secret):
+    postdata = urllib.parse.urlencode(data)
+    encoded = (str(data['nonce']) + postdata).encode()
+    message = urlpath.encode() + hashlib.sha256(encoded).digest()
+
+    mac = hmac.new(base64.b64decode(secret), message, hashlib.sha512)
+    sigdigest = base64.b64encode(mac.digest())
+    return sigdigest.decode()
+
+# Function to make Kraken API request
+def kraken_request(uri_path, data, api_key, api_sec):
+    headers = {}
+    headers['API-Key'] = api_key
+    headers['API-Sign'] = get_kraken_signature(uri_path, data, api_sec)
+    req = requests.post((api_url + uri_path), headers=headers, data=data)
+    return req
 
 if __name__ == "__main__":
-
     st.title("Kraken Portfolio App 💰")
     st.write("Below is an app to view my Kraken Portfolio. Expand the README Documentation below the Kraken Holdings")
     st.write("")
     st.write("")
+
     # Construct the Kraken API request and get the balances
     resp = kraken_request('/0/private/Balance', {
         "nonce": str(int(1000*time.time()))
