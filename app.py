@@ -63,6 +63,9 @@ if __name__ == "__main__":
     # Get the balances from the 'result' field in the response
     balances = data['result']
 
+    # Extract the list of coin names from the balances dictionary
+    crypto_names = list(balances.keys())
+
     # Show the README content
     st.markdown(readme_text)
 
@@ -88,9 +91,6 @@ if __name__ == "__main__":
     
     # Display the categorized coins in a Streamlit table
     st.dataframe(popular_coins[['name', 'Category']])
-    
-    # Get the updated list of crypto_names after the previous code execution
-    crypto_names = list(balances.keys())
     
     # Calculate the sum of coins per stable value
     stable_coins_sum = {stable_coin: sum(balances.get(coin.upper(), 0) for coin in crypto_names) for stable_coin in stable_coins}
