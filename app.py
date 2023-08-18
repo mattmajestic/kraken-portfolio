@@ -89,6 +89,9 @@ if __name__ == "__main__":
     # Display the categorized coins in a Streamlit table
     st.dataframe(popular_coins[['name', 'Category']])
     
+    # Get the updated list of crypto_names after the previous code execution
+    crypto_names = list(balances.keys())
+    
     # Calculate the sum of coins per stable value
     stable_coins_sum = {stable_coin: sum(balances.get(coin.upper(), 0) for coin in crypto_names) for stable_coin in stable_coins}
     
