@@ -13,11 +13,15 @@ import pandas as pd
 with open('README.md', 'r') as file:
     readme_text = file.read()
 
+    st.write("")
+    st.write("")
+
 # Read Kraken API key and secret stored in environment variables
 api_url = "https://api.kraken.com"
 api_key = os.environ['API_KEY_KRAKEN']
 api_sec = os.environ['API_SEC_KRAKEN']
 
+# Function to get Kraken signature
 def get_kraken_signature(urlpath, data, secret):
     postdata = urllib.parse.urlencode(data)
     encoded = (str(data['nonce']) + postdata).encode()
@@ -27,6 +31,7 @@ def get_kraken_signature(urlpath, data, secret):
     sigdigest = base64.b64encode(mac.digest())
     return sigdigest.decode()
 
+# Function to make Kraken API request
 def kraken_request(uri_path, data, api_key, api_sec):
     headers = {}
     headers['API-Key'] = api_key
@@ -34,6 +39,7 @@ def kraken_request(uri_path, data, api_key, api_sec):
     req = requests.post((api_url + uri_path), headers=headers, data=data)
     return req
 
+# Function to plot crypto balances
 def plot_crypto_balances(balances):
     sorted_balances = {k: v for k, v in sorted(balances.items(), key=lambda item: float(item[1]), reverse=True)}
     crypto_names = list(sorted_balances.keys())
@@ -49,7 +55,7 @@ def plot_crypto_balances(balances):
     st.dataframe(df)
 
 if __name__ == "__main__":
-    # Construct the request and print the result
+    # Construct the Kraken API request and get the balances
     resp = kraken_request('/0/private/Balance', {
         "nonce": str(int(1000*time.time()))
     }, api_key, api_sec)
@@ -68,3 +74,14 @@ if __name__ == "__main__":
 
     # Plot the crypto balances
     plot_crypto_balances(balances)
+
+    # Fetch popular CoinGecko coins
+    coingecko_response = requests.get("https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&ids=bitcoin,ethereum,ripple")
+    coingecko_data = coingecko_response.json()
+
+    st.write("")
+    st.write("## Popular CoinGecko Coins")
+    
+    # Create a DataFrame for popular coins
+    popular_coins = pd.DataFrame(coingecko_data)
+    st.dataframe(popular_coins)
