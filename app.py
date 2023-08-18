@@ -70,6 +70,8 @@ if __name__ == "__main__":
 
     st.write("")
     st.write("## Portfolio Breakdown by Coin Type")
+    st.write("")
+    st.write(merged_data)
 
     # Create a dictionary to store balances by type
     type_balances = {}
