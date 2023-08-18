@@ -9,6 +9,12 @@ import time
 import plotly.graph_objects as go
 import pandas as pd
 
+# Set page configuration
+st.set_page_config(
+    page_title="Kraken Portfolio",
+    page_icon="💰",  # Replace with your desired emoji
+)
+
 # Read the README file
 with open('README.md', 'r') as file:
     readme_text = file.read()
@@ -63,11 +69,10 @@ if __name__ == "__main__":
     # Get the balances from the 'result' field in the response
     balances = data['result']
 
-    # Extract the list of coin names from the balances dictionary
-    crypto_names = list(balances.keys())
-
     # Show the README content
-    st.markdown(readme_text)
+    readme_expander = st.beta_expander("README Documentation")
+    with readme_expander:
+        st.markdown(readme_text)
 
     st.write("")
     st.write("")
@@ -75,26 +80,24 @@ if __name__ == "__main__":
     # Plot the crypto balances
     plot_crypto_balances(balances)
 
-    # Fetch popular CoinGecko coins
-    coingecko_response = requests.get("https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&ids=bitcoin,ethereum,ripple")
-    coingecko_data = coingecko_response.json()
+    # Read coin types from CSV file
+    coin_types_df = pd.read_csv('kraken_lookup.csv')
+
+    # Merge coin types with balances data
+    merged_data = pd.merge(coin_types_df, pd.DataFrame(balances.items(), columns=['kraken_name', 'Balance']), on='kraken_name', how='right')
 
     st.write("")
-    st.write("## Popular CoinGecko Coins")
-    
-    # Create a DataFrame for popular coins
-    popular_coins = pd.DataFrame(coingecko_data)
-    
-    # Add a new column for coin category
-    stable_coins = ['usd', 'btc', 'eth']  # List of stable coins (lowercase)
-    popular_coins['Category'] = ['Stable' if any(stable_coin in coin.lower() for stable_coin in stable_coins) else 'Alt' for coin in popular_coins['id']]
-    
-    # Display the categorized coins in a Streamlit table
-    st.dataframe(popular_coins[['name', 'Category']])
-    
-    # Calculate the sum of coins per stable value
-    stable_coins_sum = {stable_coin: sum(balances.get(coin, 0) for coin in crypto_names if coin.lower() == stable_coin) for stable_coin in stable_coins}
-    
-    st.write("")
-    st.write("## Sum of Coins per Stable Value")
-    st.write(stable_coins_sum)
+    st.write("## Breakdown by Coin Type")
+
+    # Create a bar chart showing balances by coin type
+    type_balances = merged_data.groupby('type')['Balance'].sum()
+    st.bar_chart(type_balances)
+
+    # Show metrics by coin type
+    st.write("### Metrics by Coin Type")
+    st.dataframe(type_balances)
+
+    # Calculate total balance
+    total_balance = type_balances.sum()
+    st.write("### Total Balance")
+    st.write(total_balance)
