@@ -13,9 +13,6 @@ import pandas as pd
 with open('README.md', 'r') as file:
     readme_text = file.read()
 
-    st.write("")
-    st.write("")
-
 # Read Kraken API key and secret stored in environment variables
 api_url = "https://api.kraken.com"
 api_key = os.environ['API_KEY_KRAKEN']
@@ -84,4 +81,10 @@ if __name__ == "__main__":
     
     # Create a DataFrame for popular coins
     popular_coins = pd.DataFrame(coingecko_data)
-    st.dataframe(popular_coins)
+    
+    # Add a new column for coin category
+    stable_coins = ['USDC', 'BTC', 'ETH']  # List of stable coins
+    popular_coins['Category'] = ['Stable' if any(stable_coin.lower() in coin.lower() for stable_coin in stable_coins) else 'Alt' for coin in popular_coins['id']]
+    
+    # Display the categorized coins in a Streamlit table
+    st.dataframe(popular_coins[['name', 'Category']])
