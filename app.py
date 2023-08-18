@@ -12,7 +12,7 @@ import pandas as pd
 # Set page configuration
 st.set_page_config(
     page_title="Kraken Portfolio",
-    page_icon="💰",  # Replace with your desired emoji
+    page_icon="💰", 
 )
 
 # Read the README file
@@ -42,22 +42,12 @@ def kraken_request(uri_path, data, api_key, api_sec):
     req = requests.post((api_url + uri_path), headers=headers, data=data)
     return req
 
-# Function to plot crypto balances
-def plot_crypto_balances(balances):
-    sorted_balances = {k: v for k, v in sorted(balances.items(), key=lambda item: float(item[1]), reverse=True)}
-    crypto_names = list(sorted_balances.keys())
-    crypto_amounts = list(sorted_balances.values())
-
-    # Create an interactive pie chart using Plotly
-    fig = go.Figure(data=go.Pie(labels=crypto_names, values=crypto_amounts))
-    fig.update_layout(title='Crypto Account Balances')
-    st.plotly_chart(fig)
-
-    # Create a DataFrame to display the cryptocurrency balances
-    df = pd.DataFrame({'Cryptocurrency': crypto_names, 'Balance': crypto_amounts})
-    st.dataframe(df)
-
 if __name__ == "__main__":
+
+    st.title("Kraken Portfolio App 💰")
+    st.write("Below is an app to view my Kraken Portfolio. Expand the README Documentation below the Kraken Holdings")
+    st.write("")
+    st.write("")
     # Construct the Kraken API request and get the balances
     resp = kraken_request('/0/private/Balance', {
         "nonce": str(int(1000*time.time()))
@@ -69,16 +59,8 @@ if __name__ == "__main__":
     # Get the balances from the 'result' field in the response
     balances = data['result']
 
-    # Show the README content
-    readme_expander = st.expander("README Documentation")
-    with readme_expander:
-        st.markdown(readme_text)
-
     st.write("")
     st.write("")
-
-    # Plot the crypto balances
-    plot_crypto_balances(balances)
 
     # Read coin types from CSV file
     coin_types_df = pd.read_csv('kraken_lookup.csv')
@@ -87,17 +69,25 @@ if __name__ == "__main__":
     merged_data = pd.merge(coin_types_df, pd.DataFrame(balances.items(), columns=['kraken_name', 'Balance']), on='kraken_name', how='right')
 
     st.write("")
-    st.write("## Breakdown by Coin Type")
+    st.write("## Portfolio Breakdown by Coin Type")
 
-    # Create a bar chart showing balances by coin type
-    type_balances = merged_data.groupby('type')['Balance'].sum()
-    st.bar_chart(type_balances)
+    # Create a dictionary to store balances by type
+    type_balances = {}
+    for _, row in merged_data.iterrows():
+        if row['type'] not in type_balances:
+            type_balances[row['type']] = 0
+        type_balances[row['type']] += row['Balance']
 
-    # Show metrics by coin type
-    st.write("### Metrics by Coin Type")
-    st.dataframe(type_balances)
+    # Create labels and values for the pie chart
+    labels = list(type_balances.keys())
+    values = list(type_balances.values())
 
-    # Calculate total balance
-    total_balance = type_balances.sum()
-    st.write("### Total Balance")
-    st.write(total_balance)
+    # Create an interactive pie chart using Plotly
+    fig = go.Figure(data=go.Pie(labels=labels, values=values))
+    fig.update_layout(title='Portfolio Breakdown by Coin Type')
+    st.plotly_chart(fig)
+
+    # Show the README content
+    readme_expander = st.expander("README Documentation")
+    with readme_expander:
+        st.markdown(readme_text)
