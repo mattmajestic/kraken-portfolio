@@ -93,7 +93,7 @@ if __name__ == "__main__":
     st.dataframe(popular_coins[['name', 'Category']])
     
     # Calculate the sum of coins per stable value
-    stable_coins_sum = {stable_coin: sum(balances.get(coin.upper(), 0) for coin in crypto_names) for stable_coin in stable_coins}
+    stable_coins_sum = {stable_coin: sum(balances.get(coin, 0) for coin in crypto_names if coin.lower() == stable_coin) for stable_coin in stable_coins}
     
     st.write("")
     st.write("## Sum of Coins per Stable Value")
