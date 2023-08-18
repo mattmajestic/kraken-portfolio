@@ -83,8 +83,15 @@ if __name__ == "__main__":
     popular_coins = pd.DataFrame(coingecko_data)
     
     # Add a new column for coin category
-    stable_coins = ['USDC', 'BTC', 'ETH']  # List of stable coins
-    popular_coins['Category'] = ['Stable' if any(stable_coin.lower() in coin.lower() for stable_coin in stable_coins) else 'Alt' for coin in popular_coins['id']]
+    stable_coins = ['usd', 'btc', 'eth']  # List of stable coins (lowercase)
+    popular_coins['Category'] = ['Stable' if any(stable_coin in coin.lower() for stable_coin in stable_coins) else 'Alt' for coin in popular_coins['id']]
     
     # Display the categorized coins in a Streamlit table
     st.dataframe(popular_coins[['name', 'Category']])
+    
+    # Calculate the sum of coins per stable value
+    stable_coins_sum = {stable_coin: sum(balances.get(coin.upper(), 0) for coin in crypto_names) for stable_coin in stable_coins}
+    
+    st.write("")
+    st.write("## Sum of Coins per Stable Value")
+    st.write(stable_coins_sum)
