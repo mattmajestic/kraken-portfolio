@@ -70,7 +70,7 @@ if __name__ == "__main__":
     balances = data['result']
 
     # Show the README content
-    readme_expander = st.beta_expander("README Documentation")
+    readme_expander = st.expander("README Documentation")
     with readme_expander:
         st.markdown(readme_text)
 
