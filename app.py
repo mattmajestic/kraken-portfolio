@@ -25,22 +25,7 @@ api_key = os.environ['API_KEY_KRAKEN']
 api_sec = os.environ['API_SEC_KRAKEN']
 
 # Function to get Kraken signature
-def get_kraken_signature(urlpath, data, secret):
-    postdata = urllib.parse.urlencode(data)
-    encoded = (str(data['nonce']) + postdata).encode()
-    message = urlpath.encode() + hashlib.sha256(encoded).digest()
-
-    mac = hmac.new(base64.b64decode(secret), message, hashlib.sha512)
-    sigdigest = base64.b64encode(mac.digest())
-    return sigdigest.decode()
-
-# Function to make Kraken API request
-def kraken_request(uri_path, data, api_key, api_sec):
-    headers = {}
-    headers['API-Key'] = api_key
-    headers['API-Sign'] = get_kraken_signature(uri_path, data, api_sec)
-    req = requests.post((api_url + uri_path), headers=headers, data=data)
-    return req
+# ... (rest of the functions remain the same)
 
 if __name__ == "__main__":
 
@@ -66,7 +51,7 @@ if __name__ == "__main__":
     coin_types_df = pd.read_csv('kraken_lookup.csv')
 
     # Merge coin types with balances data
-    merged_data = pd.merge(coin_types_df, pd.DataFrame(balances.items(), columns=['kraken_name', 'Balance']), on='kraken_name', how='right')
+    merged_data = pd.merge(pd.DataFrame(balances.items(), columns=['kraken_name', 'Balance']), coin_types_df, on='kraken_name', how='left')
 
     st.write("")
     st.write("## Portfolio Breakdown by Coin Type")
@@ -74,9 +59,10 @@ if __name__ == "__main__":
     # Create a dictionary to store balances by type
     type_balances = {}
     for _, row in merged_data.iterrows():
-        if row['type'] not in type_balances:
-            type_balances[row['type']] = 0
-        type_balances[row['type']] += float(row['Balance'])  # Convert to float
+        coin_type = row['type'] if not pd.isnull(row['type']) else 'Unknown'  # Use 'Unknown' for missing types
+        if coin_type not in type_balances:
+            type_balances[coin_type] = 0
+        type_balances[coin_type] += float(row['Balance'])  # Convert to float
 
     # Create labels and values for the pie chart
     labels = list(type_balances.keys())
