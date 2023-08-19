@@ -70,8 +70,18 @@ if __name__ == "__main__":
 
     st.write("")
     st.write("## Portfolio Breakdown by Coin Type")
-    st.write("")
-    st.write(merged_data)
+
+    # Fetch price data from Kraken API for all coins
+    coin_names = merged_data['kraken_name'].tolist()
+    coin_prices = {}
+
+    for coin in coin_names:
+        if coin != 'ZUSD':  # Exclude fiat
+            pair = coin + 'USD'
+            price_response = requests.get(f'https://api.kraken.com/0/public/Ticker?pair={pair}')
+            price_data = price_response.json()
+            if 'result' in price_data and pair in price_data['result']:
+                coin_prices[coin] = float(price_data['result'][pair]['a'][0])
 
     # Create a dictionary to store balances by type
     type_balances = {}
@@ -79,7 +89,8 @@ if __name__ == "__main__":
         coin_type = row['type'] if not pd.isnull(row['type']) else 'Unknown'  # Use 'Unknown' for missing types
         if coin_type not in type_balances:
             type_balances[coin_type] = 0
-        type_balances[coin_type] += float(row['Balance'])  # Convert to float
+        balance_in_usd = float(row['Balance']) * coin_prices.get(row['kraken_name'], 0)  # Convert to USD
+        type_balances[coin_type] += balance_in_usd
 
     # Create labels and values for the pie chart
     labels = list(type_balances.keys())
@@ -87,7 +98,7 @@ if __name__ == "__main__":
 
     # Create an interactive pie chart using Plotly
     fig = go.Figure(data=go.Pie(labels=labels, values=values))
-    fig.update_layout(title='Portfolio Breakdown by Coin Type')
+    fig.update_layout(title='Portfolio Breakdown by Coin Type (USD)')
     st.plotly_chart(fig)
 
     # Show the README content
