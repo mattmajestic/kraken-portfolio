@@ -88,13 +88,18 @@ if __name__ == "__main__":
     for _, row in merged_data.iterrows():
         coin_type = row['type'] if not pd.isnull(row['type']) else 'Unknown'  # Use 'Unknown' for missing types
         if coin_type not in type_balances:
-            type_balances[coin_type] = {}
+            type_balances[coin_type] = 0
         balance_in_usd = float(row['Balance']) * coin_prices.get(row['kraken_name'], 0)  # Convert to USD
-        type_balances[coin_type][row['kraken_name']] = balance_in_usd
+        type_balances[coin_type] += balance_in_usd
 
-    # Create a DataFrame to display balances by type
-    df_type_balances = pd.DataFrame.from_dict(type_balances, orient='index')
-    st.dataframe(df_type_balances)
+    # Create labels and values for the pie chart
+    labels = list(type_balances.keys())
+    values = list(type_balances.values())
+
+    # Create an interactive pie chart using Plotly
+    fig = go.Figure(data=go.Pie(labels=labels, values=values))
+    fig.update_layout(title='Portfolio Breakdown by Coin Type (USD)')
+    st.plotly_chart(fig)
 
     # Show the README content
     readme_expander = st.expander("README Documentation")
