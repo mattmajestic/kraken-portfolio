@@ -105,8 +105,7 @@ if __name__ == "__main__":
     st.write("## Portfolio Breakdown by Coin Type (USD Equivalent)")
     
     # Create a DataFrame to display balances by type
-    df_type_balances = pd.DataFrame(type_balances.items(), columns=['Coin Type', 'USD Equivalent'])
-    st.dataframe(df_type_balances)
+    st.dataframe(type_balances)
 
     # Show the README content
     readme_expander = st.expander("README Documentation")
