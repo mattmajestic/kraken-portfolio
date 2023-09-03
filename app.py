@@ -130,5 +130,5 @@ if __name__ == "__main__":
         url = "https://raw.githubusercontent.com/mattmajestic/mattmajestic/main/README.md"
         response = requests.get(url)
         readme_content = response.text if response.status_code == 200 else ""
-        iframe_html = f'<iframe srcdoc="{readme_content}" width="800" height="600"></iframe>'
+        iframe_html = f'<iframe srcdoc="{readme_content}"></iframe>'
         st.markdown(iframe_html, unsafe_allow_html=True)
