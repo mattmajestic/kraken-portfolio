@@ -52,7 +52,7 @@ def kraken_request(uri_path, data, api_key, api_sec):
 
 if __name__ == "__main__":
     st.title("Kraken Portfolio App 💰")
-    st.write("Below is an app to view my Kraken Portfolio. Expand the README Documentation below the Kraken Holdings with Backend being in Supabase")
+    st.write("Below is an app to view my Kraken Portfolio. Expand the Expanders below for Documentation, Kraken Holdings, and Backend in Supabase")
     st.write("")
     # Show the README content
     readme_expander = st.expander("README Documentation 📓")
