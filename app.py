@@ -54,8 +54,6 @@ if __name__ == "__main__":
     st.title("Kraken Portfolio App 💰")
     st.write("Below is an app to view my Kraken Portfolio. Expand the README Documentation below the Kraken Holdings with Backend being in Supabase")
     st.write("")
-    st.write("")
-
     # Show the README content
     readme_expander = st.expander("README Documentation 📓")
     with readme_expander:
@@ -72,9 +70,6 @@ if __name__ == "__main__":
 
     # Get the balances from the 'result' field in the response
     balances = data['result']
-
-    st.write("")
-    st.write("")
 
     # Read coin types from CSV file
     # coin_types_df = pd.read_csv('kraken_lookup.csv')
