@@ -117,8 +117,14 @@ if __name__ == "__main__":
     # Create an interactive pie chart using Plotly
     fig = go.Figure(data=go.Pie(labels=labels, values=values))
     fig.update_layout(title='Portfolio Breakdown by Coin Type (USD)')
-    # Show the README content
+    # Show the portfolio content
     portfolio_expander = st.expander("Portfolio Breakdown by Coin Type 📈 ")
     with portfolio_expander:
         st.snow()
         st.plotly_chart(fig)
+    # Show the supabase content
+    supabase_expander = st.expander("Supabase Backend 🚄 ")
+    with supabase_expander:
+        st.ballons()
+        st.write("kraken table hosted in Supabase 📝")
+        st.DataFrame(coin_types_df)
