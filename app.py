@@ -55,9 +55,9 @@ if __name__ == "__main__":
     st.write("Below is an app to view my Kraken Portfolio. Expand the README Documentation below the Kraken Holdings with Backend being in Supabase")
     st.write("")
     st.write("")
-    
+
     # Show the README content
-    readme_expander = st.expander("README Documentation 📊 ")
+    readme_expander = st.expander("README Documentation 📓")
     with readme_expander:
         st.balloons()
         st.markdown(readme_text)
@@ -88,7 +88,6 @@ if __name__ == "__main__":
     # kraken_balances_db, kraken_balances_count = supabase_client.table("kraken_balances").insert(balances).execute()
 
     st.write("")
-    st.write("## Portfolio Breakdown by Coin Type")
 
     # Fetch price data from Kraken API for all coins
     coin_names = merged_data['kraken_name'].tolist()
@@ -118,4 +117,8 @@ if __name__ == "__main__":
     # Create an interactive pie chart using Plotly
     fig = go.Figure(data=go.Pie(labels=labels, values=values))
     fig.update_layout(title='Portfolio Breakdown by Coin Type (USD)')
-    st.plotly_chart(fig)
+    # Show the README content
+    portfolio_expander = st.expander("Portfolio Breakdown by Coin Type 📈 ")
+    with portfolio_expander:
+        st.snow()
+        st.plotly_chart(fig)
