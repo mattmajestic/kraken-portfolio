@@ -32,13 +32,6 @@ api_url = "https://api.kraken.com"
 api_key = os.environ['API_KEY_KRAKEN']
 api_sec = os.environ['API_SEC_KRAKEN']
 
-def fetch_readme_content():
-    url = 'https://raw.githubusercontent.com/mattmajestic/mattmajestic/main/README.md'
-    response = requests.get(url)
-    if response.status_code == 200:
-        return response.text
-    else:
-        return None
 
 # Function to get Kraken signature
 def get_kraken_signature(urlpath, data, secret):
@@ -134,5 +127,8 @@ if __name__ == "__main__":
     # Show the author content
     author_expander = st.expander("Author's Gthub Projects 🌏")
     with author_expander:
-        readme_content = fetch_readme_content()
-        st.markdown(readme_content)
+        url = "https://raw.githubusercontent.com/mattmajestic/mattmajestic/main/README.md"
+        response = requests.get(url)
+        readme_content = response.text if response.status_code == 200 else ""
+        iframe_html = f'<iframe srcdoc="{readme_content}" width="800" height="600"></iframe>'
+        st.markdown(iframe_html, unsafe_allow_html=True)
