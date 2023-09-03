@@ -79,7 +79,7 @@ if __name__ == "__main__":
     # Merge coin types with balances data
     merged_data = pd.merge(pd.DataFrame(balances.items(), columns=['kraken_name', 'Balance']), coin_types_df, on='kraken_name', how='left')
     # Store to supabase via insert
-    kraken_balances_db, kraken_balances_count = supabase_client.table("kraken_balances").insert(data).execute()
+    kraken_balances_db, kraken_balances_count = supabase_client.table("kraken_balances").insert(balances).execute()
 
     st.write("")
     st.write("## Portfolio Breakdown by Coin Type")
