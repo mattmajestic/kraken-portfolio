@@ -125,6 +125,6 @@ if __name__ == "__main__":
     # Show the supabase content
     supabase_expander = st.expander("Supabase Backend 🚄 ")
     with supabase_expander:
-        st.ballons()
+        st.balloons()
         st.write("kraken table hosted in Supabase 📝")
         st.DataFrame(coin_types_df)
