@@ -127,4 +127,4 @@ if __name__ == "__main__":
     with supabase_expander:
         st.balloons()
         st.write("kraken table hosted in Supabase 📝")
-        st.DataFrame(coin_types_df)
+        st.dataframe(coin_types_df)
