@@ -55,6 +55,12 @@ if __name__ == "__main__":
     st.write("Below is an app to view my Kraken Portfolio. Expand the README Documentation below the Kraken Holdings with Backend being in Supabase")
     st.write("")
     st.write("")
+    
+    # Show the README content
+    readme_expander = st.expander("README Documentation 📊 ")
+    with readme_expander:
+        st.balloons()
+        st.markdown(readme_text)
 
     # Construct the Kraken API request and get the balances
     resp = kraken_request('/0/private/Balance', {
@@ -113,9 +119,3 @@ if __name__ == "__main__":
     fig = go.Figure(data=go.Pie(labels=labels, values=values))
     fig.update_layout(title='Portfolio Breakdown by Coin Type (USD)')
     st.plotly_chart(fig)
-
-    # Show the README content
-    readme_expander = st.expander("README Documentation 📊 ")
-    with readme_expander:
-        st.balloons()
-        st.markdown(readme_text)
