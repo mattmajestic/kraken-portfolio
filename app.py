@@ -8,6 +8,14 @@ import base64
 import time
 import plotly.graph_objects as go
 import pandas as pd
+import supabase
+
+# Set your Supabase credentials as environment variables
+SUPABASE_URL = os.getenv("SUPABASE_URL")
+SUPABASE_KEY = os.getenv("SUPABASE_KEY")
+
+# Initialize Supabase
+supabase_client = supabase.Client(SUPABASE_URL, SUPABASE_KEY)
 
 # Set page configuration
 st.set_page_config(
@@ -64,6 +72,9 @@ if __name__ == "__main__":
 
     # Read coin types from CSV file
     coin_types_df = pd.read_csv('kraken_lookup.csv')
+    # Replace with supabase fetch
+    coin_types_db = supabase_client.table('kraken').select("*").execute()
+    st.write(coin_types_db)
 
     # Merge coin types with balances data
     merged_data = pd.merge(pd.DataFrame(balances.items(), columns=['kraken_name', 'Balance']), coin_types_df, on='kraken_name', how='left')

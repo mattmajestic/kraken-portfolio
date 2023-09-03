@@ -16,3 +16,4 @@ streamlit
 urllib3
 pycoingecko
 plotly
+supabase
