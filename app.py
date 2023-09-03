@@ -74,10 +74,13 @@ if __name__ == "__main__":
     coin_types_df = pd.read_csv('kraken_lookup.csv')
     # Replace with supabase fetch
     coin_types_db = supabase_client.table('kraken').select("*").execute()
-    st.write(coin_types_db)
+    coin_types_pd = pd.json_normalize(coin_types_db)
+    st.write(coin_types_pd)
 
     # Merge coin types with balances data
     merged_data = pd.merge(pd.DataFrame(balances.items(), columns=['kraken_name', 'Balance']), coin_types_df, on='kraken_name', how='left')
+    # Store to supabase via insert
+    merged_data_db, merged_data_count = supabase_client.table('kraken_balances').insert(merged_data).execute()
 
     st.write("")
     st.write("## Portfolio Breakdown by Coin Type")
