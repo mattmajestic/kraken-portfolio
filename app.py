@@ -1,5 +1,6 @@
 import os
 import streamlit as st
+import streamlit.components.v1 as components
 import requests
 import urllib.parse
 import hashlib
@@ -137,5 +138,4 @@ if __name__ == "__main__":
     btc_expander = st.expander("Donate BTC 💸")
     with btc_expander:
         url = "https://mainnet.demo.btcpayserver.org/api/v1/invoices?storeId=4r8DKKKMkxGPVKcW9TXB2eta7PTVzzs192TWM3KuY52e&price=100&currency=USD&defaultPaymentMethod=BTC"
-        iframe_html = f'<iframe srcdoc="{url}</iframe>'
-        st.markdown(iframe_html, unsafe_allow_html=True)
+        components.iframe(url)
