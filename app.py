@@ -138,4 +138,4 @@ if __name__ == "__main__":
     btc_expander = st.expander("Donate BTC 💸")
     with btc_expander:
         url = "https://mainnet.demo.btcpayserver.org/api/v1/invoices?storeId=4r8DKKKMkxGPVKcW9TXB2eta7PTVzzs192TWM3KuY52e&price=100&currency=USD&defaultPaymentMethod=BTC"
-        components.iframe(url)
+        components.iframe(url, scrolling=True)
