@@ -130,5 +130,12 @@ if __name__ == "__main__":
         url = "https://raw.githubusercontent.com/mattmajestic/mattmajestic/main/README.md"
         response = requests.get(url)
         readme_content = response.text if response.status_code == 200 else ""
-        iframe_html = f'<iframe srcdoc="{readme_content}"></iframe>'
+        iframe_html = f'<iframe srcdoc="{readme_content}</iframe>'
+        st.markdown(iframe_html, unsafe_allow_html=True)
+
+    # Show the BTC Pay Server
+    btc_expander = st.expander("Donate BTC 💸")
+    with btc_expander:
+        url = "https://mainnet.demo.btcpayserver.org/api/v1/invoices?storeId=4r8DKKKMkxGPVKcW9TXB2eta7PTVzzs192TWM3KuY52e&price=100&currency=USD&defaultPaymentMethod=BTC"
+        iframe_html = f'<iframe srcdoc="{url}</iframe>'
         st.markdown(iframe_html, unsafe_allow_html=True)
